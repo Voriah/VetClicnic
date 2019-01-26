@@ -18,7 +18,9 @@ import './LoginView.css'
 const styles = theme => ({
   mainContainer: {
     display: 'flex',
-    flexWrap: 'wrap',   
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    alignItems: 'center' 
   },
   container: {
     display: 'flex',
@@ -92,7 +94,7 @@ class LoginView extends Component {
 
     return (
       <>
-      <Grid className={classes.mainContainer} >
+      <Grid  className={classes.mainContainer} spacing={0}>
       <Grid item>
       <Card className={classes.card}>       
         <CardContent> 
@@ -106,7 +108,9 @@ class LoginView extends Component {
 
           <Grid container spacing={0}>       
               <Grid item>
-                <img className="logingImage imgRnd10 imageShadow imageRotate" src="./images/IMG_9465.JPG" alt="Veterinary" />
+                <img className="logingImage imgRnd10 imageShadow imageRotate" 
+                     src="./images/IMG_9465.JPG" 
+                     alt="Veterinary" />
               </Grid>
               <Grid item>
                 <form className={classes.container} noValidate autoComplete="off">

@@ -401,19 +401,36 @@ class IntegrationReactSelect extends React.Component {
   chooseCalc = (chosen, medication, patient) => {
     if (chosen === "Injectable") {
       let injectDose = calcInjectable(medication, patient)
-      this.setState({ injectableDose: injectDose })
+      this.setState({ 
+        injectableDose: injectDose,
+        suspensionDose: [],
+        tabletDose: [],
+        capsuleDose: []
+       })
     }
     if (chosen === "Suspension") {
       let suspDose = calcSuspension(medication, patient)
-      this.setState({ suspensionDose: suspDose })
+      this.setState({ 
+        suspensionDose: suspDose,
+        injectableDose: [],
+        tabletDose: [],
+        capsuleDose: [] })
     }
     if (chosen === "Tablet") {
       let tabDose = calcTablet(medication, patient)
-      this.setState({ tabletDose: tabDose })
+      this.setState({ 
+        tabletDose: tabDose,
+        suspensionDose: [],
+        injectableDose: [],
+        capsuleDose: [] })
     }
     if (chosen === "Capsule") {
       let capDose = calcCapsule(medication, patient)
-      this.setState({ capsuleDose: capDose })
+      this.setState({ 
+        capsuleDose: capDose,
+        suspensionDose: [],
+        tabletDose: [],
+        injectableDose: [] })
     }
   }
 
@@ -444,7 +461,9 @@ class IntegrationReactSelect extends React.Component {
             medication={this.state.medication}
             patient={this.state.patient}
             doctor={this.state.doctor.label}
-            dose={dose}
+            mL={dose.mL}
+            low={dose.low}
+            hi={dose.hi}
           />
           ))}
         </>

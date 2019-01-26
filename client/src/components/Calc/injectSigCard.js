@@ -29,6 +29,7 @@ import Paper from '@material-ui/core/Paper';
 import { emphasize } from '@material-ui/core/styles/colorManipulator';
 import SendIcon from '@material-ui/icons/Send';
 import Plumbs from '../../images/plumbs.jpg'
+import Slider from '@material-ui/lab/Slider';
 
 const styles = theme => ({
   card: {
@@ -41,6 +42,9 @@ const styles = theme => ({
   media: {
     height: 0,
     paddingTop: '56.25%', // 16:9
+  },
+  slider: {
+    padding: '22px 0px',
   },
   actions: {
     display: 'flex',
@@ -213,11 +217,17 @@ class RecipeReviewCard extends React.Component {
     notes: "",
     route: "",
     routes: null,
-    removeMe: false
+    removeMe: false,
+    value: null
   };
 
   handleExpandClick = () => {
     this.setState(state => ({ expanded: !state.expanded }));
+  };
+
+  handleSliderChange = (event, value) => {
+    value = value.toFixed(2)
+    this.setState({ value });
   };
 
   handleChange = name => event => {
@@ -248,15 +258,23 @@ class RecipeReviewCard extends React.Component {
       label: suggestion.label,
     }));
     this.setState({
-      hours: this.props.medication.hours,
-      days: this.props.medication.days,
       removeMe: false,
       routes: routeSuggestions
     })
   }
 
+  componentWillMount = (props) => {
+    if (this.props.mL === null) {
+      let formatmL = parseFloat(((this.props.hi + this.props.low) / 2).toFixed(2))
+      this.setState({
+        value: parseFloat(formatmL)
+      })
+    }
+
+  }
   render() {
     const { classes, theme } = this.props;
+    const { value } = this.state;
 
     const selectStyles = {
       input: base => ({
@@ -268,107 +286,121 @@ class RecipeReviewCard extends React.Component {
       }),
     };
     if (this.state.removeMe === false) {
-    return (
-      <Card className={classes.card}>
-        <CardHeader
-          avatar={
-            <Avatar aria-label="Inj" className={classes.avatar}>
-              Inj
+      return (
+        <Card className={classes.card}>
+          <CardHeader
+            avatar={
+              <Avatar aria-label="Inj" className={classes.avatar}>
+                Inj
             </Avatar>
-          }
-          action={
-            <IconButton>
-              <CancelIcon onClick={() => this.setState({ removeMe: true })} />
-            </IconButton>
-          }
-          title={this.props.patient.patientname}
-          subheader={this.props.patient.ownername}
-        />
+            }
+            action={
+              <IconButton>
+                <CancelIcon onClick={() => this.setState({ removeMe: true })} />
+              </IconButton>
+            }
+            title={this.props.patient.patientname}
+            subheader={this.props.patient.ownername}
+          />
 
-        <CardContent>
-          <Grid container spacing={24}>
-          </Grid>
-          <Typography component="p">
-            {this.props.doctor}
-          </Typography>
-          <Typography component="p">
-            {this.props.medication.name}: ({this.props.medication.alias[0]}) {this.props.medication.injectable.concentration}mg/mL
-          </Typography>
-            {this.props.dose.mL !== 0 ? 
-            <> 
-          <Typography component="p">
-            Give {this.props.dose.mL} mL {this.state.route}.
-          </Typography>
-             </> : <>
-              <Typography component="p">
-                Give {this.state.mL} mL {this.state.route}.
-          </Typography>
-             <Typography component="p">
-                Dosage range: {this.props.dose.low} to {this.props.dose.hi} mL. ({this.props.medication.injectable.doseRangeCanine[0]} to {this.props.medication.injectable.doseRangeCanine[1]} mg/kg)
-          </Typography>
-          </>}
-          <Typography component="p">
-            {this.state.notes}
-          </Typography>
-        </CardContent>
-        <CardActions className={classes.actions} disableActionSpacing>
-          <IconButton aria-label="Add to favorites">
-            <SaveIcon />
-          </IconButton>
-          <IconButton aria-label="Share">
-            <PrintIcon />
-          </IconButton>
-          <a href={this.props.medication.link} target="_blank">
-            <Avatar src={Plumbs} className={classes.avatar} />
-          </a>
-          <IconButton
-            className={classnames(classes.expand, {
-              [classes.expandOpen]: this.state.expanded,
-            })}
-            onClick={this.handleExpandClick}
-            aria-expanded={this.state.expanded}
-            aria-label="Show more"
-          >
-            <ExpandMoreIcon />
-          </IconButton>
-        </CardActions>
-        <Collapse in={this.state.expanded} timeout="auto" unmountOnExit>
           <CardContent>
             <Grid container spacing={24}>
-            <Grid item xs={12}>
-            <Select
-              id="types"
-              classes={classes}
-              styles={selectStyles}
-              value={this.state.route}
-              options={this.state.routes}
-              onChange={this.handleRouteChange('route')}
-              components={components}
-              placeholder="Select Route"
-              isClearable
-              />
-              </Grid>
-              </Grid>
-            <Grid item xs={12}>
-            <TextField
-              id="outlined-multiline-flexible"
-              label="Notes"
-              multiline
-              rowsMax="4"
-              value={this.state.multiline}
-              onChange={this.handleChange('notes')}
-              className={classes.textField}
-              fullWidth
-              margin="normal"
-              variant="outlined"
-            />
             </Grid>
+            <Typography component="p">
+              {this.props.doctor}
+            </Typography>
+            <Typography component="p">
+              {this.props.medication.name}: ({this.props.medication.alias[0]}) {this.props.medication.injectable.concentration}mg/mL
+          </Typography>
+            {this.props.mL !== null ?
+              <>
+                <Typography component="p">
+                  Give {this.props.mL} mL {this.state.route}.
+          </Typography>
+              </> : <>
+                <Typography component="p">
+                  Give {this.state.value} mL {this.state.route}.
+          </Typography>
+              </>}
+            <Typography component="p">
+              {this.state.notes}
+            </Typography>
           </CardContent>
-        </Collapse>
-      </Card>
-    );
-  } else {return(null)}
-}
+          <CardActions className={classes.actions} disableActionSpacing>
+            <IconButton aria-label="Add to favorites">
+              <SaveIcon />
+            </IconButton>
+            <IconButton aria-label="Share">
+              <PrintIcon />
+            </IconButton>
+            <a href={this.props.medication.link} target="_blank">
+              <Avatar src={Plumbs} className={classes.avatar} />
+            </a>
+            <IconButton
+              className={classnames(classes.expand, {
+                [classes.expandOpen]: this.state.expanded,
+              })}
+              onClick={this.handleExpandClick}
+              aria-expanded={this.state.expanded}
+              aria-label="Show more"
+            >
+              <ExpandMoreIcon />
+            </IconButton>
+          </CardActions>
+          <Collapse in={this.state.expanded} timeout="auto" unmountOnExit>
+            <CardContent>
+              <Grid container spacing={24}>
+                <Grid item xs={12}>
+                  {this.props.low ?
+                    <>
+                      <Typography component="p">
+                        Dosage range: {this.props.low} to {this.props.hi} mL. ({this.props.medication.injectable.doseRangeCanine[0]} to {this.props.medication.injectable.doseRangeCanine[1]} mg/kg)
+                      </Typography>
+                      <Typography component="p">
+                        Current dose: {(this.state.value * this.props.medication.injectable.concentration / (this.props.patient.weight / 2.2)).toFixed(2)} mg/kg
+                      </Typography>
+                      <Slider
+                        classes={{ container: classes.slider }}
+                        value={parseFloat(value)}
+                        aria-labelledby="label"
+                        onChange={this.handleSliderChange}
+                        min={parseFloat(this.props.low)}
+                        max={parseFloat(this.props.hi)}
+                      />
+                    </> : null}
+                  <Select
+                    id="types"
+                    classes={classes}
+                    styles={selectStyles}
+                    value={this.state.route}
+                    options={this.state.routes}
+                    onChange={this.handleRouteChange('route')}
+                    components={components}
+                    placeholder="Select Route"
+                    isClearable
+                  />
+                </Grid>
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  id="outlined-multiline-flexible"
+                  label="Notes"
+                  multiline
+                  rowsMax="4"
+                  value={this.state.multiline}
+                  onChange={this.handleChange('notes')}
+                  className={classes.textField}
+                  fullWidth
+                  margin="normal"
+                  variant="outlined"
+                />
+              </Grid>
+            </CardContent>
+          </Collapse>
+        </Card>
+      );
+    } else { return (null) }
+  }
 }
 
 RecipeReviewCard.propTypes = {

@@ -2864,7 +2864,7 @@ module.exports = {
         tabletSizes: [16, 24, 60, 160],
         doseCanine: 4,
         doseRangeCanine: [0],
-        doseFeline: 0,
+        doseFeline: 4,
         doseRangeFeline: [0],
         alert: ""
       },
